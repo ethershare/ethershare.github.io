@@ -93,7 +93,7 @@
                       <i class="weui-icon-search gray"></i>
                       <p class="weui-tabbar__label font15 gray">Read</p>
                   </a>
-                  <a href="javascript:;" onclick="goto('./share.html')" class="weui-tabbar__item weui-bar__item_on">
+                  <a href="javascript:;" class="weui-tabbar__item weui-bar__item_on">
                       <i class="weui-icon-info"></i>
                       <p class="weui-tabbar__label font15 blue">Share</p>
                   </a>
@@ -113,9 +113,6 @@ var EtherShare;
 function goto(url) {
     document.getElementById('loadingToast').innerHTML = '<div class="weui-mask_transparent"></div><div class="weui-toast"><i class="weui-loading weui-icon_toast"></i><p class="weui-toast__content">Loading</p></div>';
     location.href=url;
-    setTimeout(function() {
-      document.getElementById('loadingToast').innerHTML = "";
-    },2000);
 }
 
 

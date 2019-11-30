@@ -130,6 +130,17 @@ function clickLike(ShareID, ReplyID) {
   openaction = [ShareID,ReplyID,"like"];
 }
 
+
+function clickForward(ShareID, ReplyID) {
+  if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="forward")
+    return cancel();
+  cancel();
+
+  alert("working in progress!");
+
+  openaction = [ShareID,ReplyID,"forward"];
+}
+
 function clickReward(ShareID, ReplyID) {
   if(openaction.length!=0 && ShareID==openaction[0] && ReplyID==openaction[1] && openaction[2]=="reward")
     return cancel();
@@ -257,7 +268,7 @@ function timestampToTime(timestamp) {
 }
 
 function Share2html(ShareID, oneQuery) {
-  var str = '<div class="weui-panel"><div class="weui-panel__bd" id="ReplyOf'+ShareID+'"><div class="weui-media-box weui-media-box_text"><p><h3 class="weui-media-box__title inline">'+oneQuery.nickname+'</h3></p><p class="weui-media-box__desc dark font16">'+timestampToTime(oneQuery.timestamp)+'<br>'+oneQuery.content.replace(/\n/g, '<br>')+'</p><ul class="weui-media-box__info font16"><li class="weui-media-box__info__meta gray" onclick="clickReward('+ShareID+','+0+')" ><u>Forward</u></li><li class="weui-media-box__info__meta gray" onclick="clickReply('+ShareID+')"><u>Reply</u></li><li class="weui-media-box__info__meta gray" onclick="clickLike('+ShareID+','+0+')"><u>Like: '+oneQuery.like+'</u></li><li class="weui-media-box__info__meta gray" onclick="clickReward('+ShareID+','+0+')"><u>Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</u></li></ul><div id="ActionTo'+ShareID+'-0"></div></div></div></div>';
+  var str = '<div class="weui-panel"><div class="weui-panel__bd" id="ReplyOf'+ShareID+'"><div class="weui-media-box weui-media-box_text"><p><h3 class="weui-media-box__title inline">'+oneQuery.nickname+'</h3></p><p class="weui-media-box__desc dark font16">'+timestampToTime(oneQuery.timestamp)+'<br>'+oneQuery.content.replace(/\n/g, '<br>')+'</p><ul class="weui-media-box__info font16"><li class="weui-media-box__info__meta gray" onclick="clickForward('+ShareID+','+0+')" ><u>Forward</u></li><li class="weui-media-box__info__meta gray" onclick="clickReply('+ShareID+')"><u>Reply</u></li><li class="weui-media-box__info__meta gray" onclick="clickLike('+ShareID+','+0+')"><u>Like: '+oneQuery.like+'</u></li><li class="weui-media-box__info__meta gray" onclick="clickReward('+ShareID+','+0+')"><u>Reward: '+web3.utils.fromWei(oneQuery.reward,"ether")+' ETH</u></li></ul><div id="ActionTo'+ShareID+'-0"></div></div></div></div>';
 
   return str;
 }
@@ -295,6 +306,10 @@ function readShare(ShareID, ReplyID,  length) {
         pullBoxes();
       }
 
+      if (toastStatus=="connect") {
+        removeToast();
+      }
+
       readShare(ShareID, ReplyID+1, length);
     }
   });
@@ -322,7 +337,7 @@ function startApp(){
 
   EtherShareQuery = new web3.eth.Contract([{"constant": true,"inputs": [{"internalType": "uint256","name": "ShareID","type": "uint256"},{"internalType": "uint256","name": "ReplyID","type": "uint256"}],"name": "get","outputs": [{"components": [{"internalType": "address","name": "sender","type": "address"},{"internalType": "string","name": "nickname","type": "string"},{"internalType": "uint256","name": "timestamp","type": "uint256"},{"internalType": "bool","name": "AllowUpdated","type": "bool"},{"internalType": "string","name": "content","type": "string"},{"internalType": "uint256","name": "like","type": "uint256"},{"internalType": "uint256","name": "reward","type": "uint256"}],"internalType": "struct EtherShareQuery.oneQuery","name": "","type": "tuple"}],"payable": false,"stateMutability": "view","type": "function"}], "0x71de0d9fea931b42297d94cac5ec915410e1da99");
 
-  var queryShareID = getQuery()["ShareID"];
+  var queryShareID = getQuery()["id"];
   if(queryShareID) {
     var ShareID = parseInt(queryShareID);
     readShare(ShareID,0,0);
@@ -342,18 +357,18 @@ window.addEventListener('load', function() {
   // Modern dapp browsers...
   if (window.ethereum) {
     window.web3 = new Web3(ethereum);
-    console.log("Modern");
+    addToast("Connecting", "connect");
     startApp();
   }
   // Legacy dapp browsers...
   else if (window.web3) {
     window.web3 = new Web3(web3.currentProvider);
-    console.log("Legacy");
+    addToast("Connecting", "connect");
     startApp();
   }
   // Non-dapp browsers...
   else {
-    alert("No Web3. Using provider from infura.io.");
+    addToast("Using Infura.io", "connect");
     window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/bf14a42f4ce744afb9c2eec7ba215b01"));
     startApp();
   }
@@ -361,15 +376,22 @@ window.addEventListener('load', function() {
 
 function goto(url) {
     if(url=="./index.html") {
-      if(getQuery()["ShareID"]==null)
+      if(getQuery()["id"]==null)
         return;
     }
-
-    document.getElementById('loadingToast').innerHTML = '<div class="weui-mask_transparent"></div><div class="weui-toast"><i class="weui-loading weui-icon_toast"></i><p class="weui-toast__content">Loading</p></div>';
+    addToast("Loading", "load");
     location.href=url;
-    setTimeout(function() {
-      document.getElementById('loadingToast').innerHTML = "";
-    },2000);
+}
+
+var toastStatus;
+function addToast(str, status) {
+    document.getElementById('loadingToast').innerHTML = '<div class="weui-mask_transparent"></div><div class="weui-toast"><i class="weui-loading weui-icon_toast"></i><p class="weui-toast__content">'+str+'</p></div>';
+    toastStatus = status;
+}
+
+function removeToast() {
+    document.getElementById('loadingToast').innerHTML = "";
+    toastStatus = "";
 }
 
 </script>
