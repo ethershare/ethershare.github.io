@@ -136,9 +136,9 @@ function clickForward(ShareID, ReplyID) {
     return cancel();
   cancel();
 
-  alert("working in progress!");
-
   openaction = [ShareID,ReplyID,"forward"];
+
+  goto("./forward.html?s="+ShareID+"&r="+ReplyID);
 }
 
 function clickReward(ShareID, ReplyID) {
