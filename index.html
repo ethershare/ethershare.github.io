@@ -110,6 +110,16 @@
     var url = location.search;
     if(url.indexOf("imtoken")>0)
       location.href="./mobile/";
+
+    var ua = navigator.userAgent;
+    var mobiles = ["MicroMessenger","Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+    for (i in mobiles) {
+      if(ua.indexOf(mobiles[i])>=0)
+        location.href="./mobile/";
+    }
+
   </script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
 </head>
