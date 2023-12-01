@@ -117,7 +117,7 @@ function timestampToTime(timestamp) {
   h = add0(date.getHours()) + ':';
   m = add0(date.getMinutes()) + ':';
   s = add0(date.getSeconds());
-  return Y+M+D+h+m+s;
+  return Y+M+D+" "+h+m+s;
 }
 
 function query2html(ShareID, ReplyID, oneQuery) {
